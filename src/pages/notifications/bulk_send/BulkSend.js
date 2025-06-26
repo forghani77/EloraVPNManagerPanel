@@ -11,7 +11,7 @@ import AddOneFrom from '../AddOne';
 
 const validationSchema = yup.object({
   message: yup.string().required(),
-  user_ids: yup.string().required()
+  user_ids: yup.string()
 });
 const initialForm = {
   user_ids: '',
