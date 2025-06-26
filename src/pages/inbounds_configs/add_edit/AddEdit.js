@@ -52,7 +52,7 @@ const networks = [
   { id: 'kcp', name: 'kcp' },
   { id: 'http', name: 'http' },
   { id: 'httpupgrade', name: 'httpupgrade' },
-  { id: 'splithttp', name: 'splithttp' }
+  { id: 'xhttp', name: 'xhttp' }
 ];
 const fingerPrints = [
   { id: 'none', name: 'None' },
