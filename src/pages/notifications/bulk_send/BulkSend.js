@@ -21,8 +21,8 @@ const initialForm = {
   user_id: 0,
   type: 'general',
   engine: 'telegram',
-  approve: false,
-  keyboard: '',
+  approve: true,
+  keyboard: '[]',
   photo_url: ''
 };
 
@@ -32,9 +32,14 @@ const BulkSend = (props) => {
 
   const handleSubmit = (values) => {
     setPostDataLoading(true);
+    let formattedUserIds = [];
+    if (values.user_ids.trim()) {
+      // Check if the string is not empty or just whitespace
+      formattedUserIds = values.user_ids.split('\n').filter((id) => id.trim() !== '');
+    }
     HttpService()
       .post(`${api.notifications}/bulk_send`, {
-        user_ids: values.user_ids.split('\n'),
+        user_ids: formattedUserIds,
         notification: {
           ...values
         }
