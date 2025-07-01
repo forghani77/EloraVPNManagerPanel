@@ -1,7 +1,5 @@
-import HttpService from 'components/httpService';
-import api from 'components/httpService/api';
 import { useCallback, useState } from 'react';
-import { getAllInbounds } from 'services/inboundServices';
+import { createInboundConfig, getAllInbounds } from 'services/inboundConfigsService';
 
 const useInboundConfigs = () => {
   const [inboundConfigs, setInboundConfigs] = useState([]);
@@ -19,8 +17,13 @@ const useInboundConfigs = () => {
     }
   }, []);
 
-  const addInboundConfigs = (data) => {
-    HttpService().post(api.inboundConfigs, data);
+  const addInboundConfigs = async (data) => {
+    try {
+      await createInboundConfig(data);
+      getInboundConfigs();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return { getInboundConfigs, inboundConfigs, isLoading, addInboundConfigs };

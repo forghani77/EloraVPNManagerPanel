@@ -41,11 +41,9 @@ const Dashboard = () => {
   const { hostZones, isLoading, getHostZones } = useHostZones();
 
   const getReport = useCallback(async () => {
-    const DD = dayjs().utc().format('DD');
-    const a = dayjs()
-      .utc()
-      .format(`YYYY-MM-${DD - 1} HH:mm`);
-    const b = dayjs().utc().format(`YYYY-MM-DD HH:mm`);
+    // Fixed: Use dayjs subtract method instead of manual calculation
+    const a = dayjs().utc().subtract(1, 'day').format('YYYY-MM-DD HH:mm');
+    const b = dayjs().utc().format('YYYY-MM-DD HH:mm');
 
     try {
       const { data } = await getReportAccount({
@@ -82,11 +80,10 @@ const Dashboard = () => {
   const hadleSubmitHostZone = async (values) => {
     setIsLoadingGetReport(true);
     var obj = {};
-    const DD = dayjs().utc().format('DD');
-    const a = dayjs()
-      .utc()
-      .format(`YYYY-MM-${DD - 1} HH:mm`);
-    const b = dayjs().utc().format(`YYYY-MM-DD HH:mm`);
+
+    // Fixed: Use dayjs subtract method instead of manual calculation
+    const a = dayjs().utc().subtract(1, 'day').format('YYYY-MM-DD HH:mm');
+    const b = dayjs().utc().format('YYYY-MM-DD HH:mm');
 
     if (values.date === 24)
       obj = {

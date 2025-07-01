@@ -4,9 +4,8 @@ import { Form, Formik } from 'formik';
 import TextField from 'components/formik/textfield';
 import Select from 'components/formik/select';
 import * as yup from 'yup';
-import HttpService from 'components/httpService';
-import api from 'components/httpService/api';
 import Http from 'components/httpService/Http';
+import { createInboundConfig, updateInboundConfig } from 'services/inboundConfigsService';
 import Switch from 'components/formik/switch';
 import useInbounds from 'hooks/useInbound';
 import Button from 'components/button';
@@ -25,7 +24,9 @@ const validationSchema = yup.object({
       /(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/,
       'Is not in correct Domain'
     )
-    .required()
+    .required(),
+  config_mode: yup.string().nullable(),
+  extra: yup.string().nullable()
 });
 
 const types = [
@@ -54,6 +55,12 @@ const networks = [
   { id: 'httpupgrade', name: 'httpupgrade' },
   { id: 'xhttp', name: 'xhttp' }
 ];
+const modes = [
+  { id: 'auto', name: 'Auto' },
+  { id: 'packet-up', name: 'Packet Up' },
+  { id: 'stream-up', name: 'Stream Up' },
+  { id: 'stream-one', name: 'Stream One' }
+];
 const fingerPrints = [
   { id: 'none', name: 'None' },
   { id: 'chrome', name: 'Chrome' },
@@ -80,7 +87,9 @@ const initialForm = {
   develop: false,
   finger_print: 'none',
   network: 'ws',
-  inbound_id: ''
+  inbound_id: '',
+  config_mode: '',
+  extra: ''
 };
 
 const AddEdit = (props) => {
@@ -96,12 +105,11 @@ const AddEdit = (props) => {
 
   const handleCreate = (values) => {
     setPostDataLoading(true);
-    HttpService()
-      .post(api.inboundConfigs, values)
+    createInboundConfig(values)
       .then((res) => {
         Http.success(res);
         refrence.current.changeStatus();
-        createRow(res.data);
+        createRow(res);
       })
       .catch((err) => Http.error(err))
       .finally(() => {
@@ -111,12 +119,11 @@ const AddEdit = (props) => {
 
   const handleEdit = (values) => {
     setPostDataLoading(true);
-    HttpService()
-      .put(`${api.inboundConfigs}/${initial?.id}`, values)
+    updateInboundConfig(initial?.id, values)
       .then((res) => {
         Http.success(res);
         refrence.current.changeStatus();
-        editRow(res.data);
+        editRow(res);
       })
       .catch((err) => Http.error(err))
       .finally(() => {
@@ -134,7 +141,7 @@ const AddEdit = (props) => {
     >
       {() => (
         <Form>
-          <Grid container spacing={12} rowSpacing={2}>
+          <Grid container spacing={2} rowSpacing={2}>
             <Grid item xs={12} md={4}>
               <TextField name="remark" label="Remark" />
             </Grid>
@@ -195,8 +202,14 @@ const AddEdit = (props) => {
               <Select name="network" label="Network" options={networks} />
             </Grid>
             <Grid item xs={12} md={4}>
+              <Select name="config_mode" label="Mode" options={modes} />
+            </Grid>
+            <Grid item xs={12} md={4}>
               <Switch name="enable" label="Enable" />
               <Switch name="develop" label="Develop" />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField name="extra" label="Extra" multiline minRows={4} />
             </Grid>
           </Grid>
 
